@@ -25,9 +25,9 @@ require "./vendor/autoload.php";
 /**
  * 初始化方式一（环境变量配置，推荐）
  *TRIPARTITE_HOST = 
- *TRIPARTITE_APPID = 
+ *TRIPARTITE_APP_ID = 
  *TRIPARTITE_APP_SECRET = 
- *TRIPARTITE_SMS = 0
+ *TRIPARTITE_SMS_IS_OPEN = 0
  *TRIPARTITE_SMS_MOBILE_WHITE_LIST = 18888888888
  */
  $smsClient=SmsClient::getInstance();
