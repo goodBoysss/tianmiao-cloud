@@ -27,6 +27,20 @@ class SmsClient extends TripartiteClient
 
     public $smsMobileWhiteList;
 
+
+    protected function init($config)
+    {
+        if (isset($config['sms_is_open'])) {
+            $this->smsIsOpen = $config['sms_is_open'];
+        }
+
+        if (isset($config['sms_mobile_white_list'])) {
+            $this->smsMobileWhiteList = $config['sms_mobile_white_list'];
+        }
+
+        parent::init($config);
+    }
+
     /**
      * 发送短信
      * @param string $mobile 手机号
@@ -52,8 +66,8 @@ class SmsClient extends TripartiteClient
      * 发送验证码短信短信
      * @param string $mobile 手机号
      * @param int $type 类型：2-登录；3-注册...
-     * @param array $code
-     * @return array
+     * @param int $code 验证码
+     * @return bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
      */
     public function sendSmsCode($mobile, $type, $code)
@@ -74,7 +88,7 @@ class SmsClient extends TripartiteClient
         if (isset($this->smsIsOpen)) {
             if ($this->smsIsOpen == 0) {
                 if (!empty($this->smsMobileWhiteList)) {
-                    $smsMobileWhiteList = explode($this->smsMobileWhiteList, ',');
+                    $smsMobileWhiteList = explode(',', $this->smsMobileWhiteList);
                     if (in_array($mobile, $smsMobileWhiteList)) {
                         return true;
                     } else {
@@ -83,6 +97,7 @@ class SmsClient extends TripartiteClient
                 }
                 return false;
             }
+
         }
         return true;
     }

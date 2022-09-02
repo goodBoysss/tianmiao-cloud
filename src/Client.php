@@ -53,7 +53,7 @@ abstract class Client
     }
 
 
-    private function init($config)
+    protected function init($config)
     {
         if (!empty($config['host'])) {
             $this->host = $config['host'];
@@ -84,7 +84,7 @@ abstract class Client
             foreach ($envConfig as $key => $envKey) {
                 if (empty($this->$key)) {
                     $value = getenv($envKey);
-                    if (isset($value) && !empty($key)) {
+                    if ($value != false && !empty($key)) {
                         $this->$key = $value;
                     }
                 }
