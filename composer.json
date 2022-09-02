@@ -1,0 +1,17 @@
+{
+    "name": "tianmiao/cloud",
+    "description": "天渺公共服务",
+    "autoload": {
+        "psr-4": {
+            "Tianmiao\\Cloud\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "zhanglx",
+            "email": "zhanglx92@163.com"
+        }
+    ],
+    "require": {
+    }
+}
