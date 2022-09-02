@@ -84,7 +84,7 @@ abstract class Client
             foreach ($envConfig as $key => $envKey) {
                 if (empty($this->$key)) {
                     $value = getenv($envKey);
-                    if ($value != false && !empty($key)) {
+                    if ($value !== false && !empty($key)) {
                         $this->$key = $value;
                     }
                 }
