@@ -21,7 +21,7 @@ use Tianmiao\Cloud\App\Tripartite\TripartiteClient;
 class SmsClient extends TripartiteClient
 {
     /**@var $this */
-    static $instance;
+    static protected $instance;
 
     public $smsIsOpen;
 
