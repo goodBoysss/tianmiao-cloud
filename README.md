@@ -14,7 +14,7 @@ composer require tianmiao/cloud
 
 
 
-## 示例
+## 功能介绍
 
 
 ### 三方管理-短信
@@ -24,11 +24,16 @@ require "./vendor/autoload.php";
 
 /**
  * 初始化方式一（环境变量配置，推荐）
+ *TRIPARTITE_HOST = 
+ *TRIPARTITE_APPID = 
+ *TRIPARTITE_APP_SECRET = 
+ *TRIPARTITE_SMS = 0
+ *TRIPARTITE_SMS_MOBILE_WHITE_LIST = 18888888888
  */
  $smsClient=SmsClient::getInstance();
  
 /**
- * 初始化方式二（传参）
+ * 初始化方式二（入参）
  */
  $smsClient=SmsClient::getInstance(array(
    'host'=>'****',
@@ -43,11 +48,39 @@ require "./vendor/autoload.php";
  * 发送验证码短信
  * @param string $mobile 手机号
  * @param int $type 类型：2-登录；3-注册...
- * @param int $code 验证码
- * @return bool
+ * @param int $code 短信验证码
+ * @return bool true-发送请求成功
  * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
  */
 $result=$smsClient->sendSmsCode(18888888888,2,1234);
 
+```
+
+#### 示例一
+```php
+
+/**
+ * 发送验证码短信
+ * @param string $mobile 手机号
+ * @param int $type 类型：2-登录；3-注册...
+ * @param int $code 短信验证码
+ * @return bool true-发送请求成功
+ * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+ */
+$result=SmsClient::getInstance()->sendSmsCode(18888888888,2,1234);
 
 ```
+
+#### 示例二
+```php
+
+/**
+ * 检查短信发送白名单
+ * @param string $mobile 手机号
+ * @return bool true-通道全量开启或在白名单中
+ * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+ */
+$result=SmsClient::getInstance()->checkSendWhite(18888888888);
+
+```
+
