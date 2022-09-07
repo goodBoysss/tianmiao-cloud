@@ -143,19 +143,23 @@ class HttpRequest extends \Exception
      */
     private function sendPost($url, $param, $header = [])
     {
-        $cl = curl_init();//①：初始化
-        curl_setopt($cl, CURLOPT_URL, $url);
-        curl_setopt($cl, CURLOPT_RETURNTRANSFER, 1);
+        $ch = curl_init();//①：初始化
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if (!empty($header)) {
-            curl_setopt($cl, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
-        curl_setopt($cl, CURLOPT_POST, 1);
-        curl_setopt($cl, CURLOPT_POSTFIELDS, $param);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+        //连接超时时间
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        //执行超时时间
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-        $content = curl_exec($cl);//③：执行并获取结果
-        $code = curl_getinfo($cl, CURLINFO_HTTP_CODE);
+        $content = curl_exec($ch);//③：执行并获取结果
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($code != 200) return false;
-        curl_close($cl);//④：释放句柄
+        curl_close($ch);//④：释放句柄
         return $content;
     }
 
@@ -178,6 +182,10 @@ class HttpRequest extends \Exception
         }
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //连接超时时间
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        //执行超时时间
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         $content = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($code != 200) return false;
