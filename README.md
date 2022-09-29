@@ -17,6 +17,61 @@ composer require tianmiao/cloud
 ## 功能介绍
 
 
+
+### 财务平台-信息认证
+```php
+require "./vendor/autoload.php";
+
+/**
+ * 初始化方式一（环境变量配置，推荐）
+ *FINANCIAL_HOST = 
+ *FINANCIAL_APP_KEY = 
+ *FINANCIAL_APP_SECRET = 
+ */
+ $financialVerifyClient=FinancialVerifyClient::getInstance();
+ 
+/**
+ * 初始化方式二（入参）
+ */
+ $financialVerifyClient=FinancialVerifyClient::getInstance(array(
+   'host'=>'****',
+   'app_id'=>'****',
+   'app_secret'=>'****',
+));
+
+```
+
+#### 示例一
+```php
+
+/**
+ * 用户信息验证
+ * @param array $params 认证信息
+ *          truename    真实姓名
+ *          id_card     身份证号码
+ *          alipay_account     支付宝提现账户
+ *          mobile     手机号
+ *          user_id     用户ID
+ *          user_code     用户编号
+ *          nickname     用户呢称
+ * @return array
+ *          status  状态：1-申请认证提交成功；0-申请认证提交失败；
+ *          error   申请认证提交失败错误信息
+ * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+ */
+$result=FinancialVerifyClient::getInstance()->verifyUser(array(
+        'truename'=>"***",
+        'id_card'=>"***",
+        'alipay_account'=>"***",
+        'mobile'=>"***",
+        'user_id'=>"***",
+        'user_code'=>"***",
+        'nickname'=>"***",
+));
+
+```
+
+
 ### 三方管理-短信
 ```php
 

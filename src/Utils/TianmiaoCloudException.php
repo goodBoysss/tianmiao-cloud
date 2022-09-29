@@ -14,8 +14,6 @@ class TianmiaoCloudException extends \Exception
         990010 => "网络请求失败",
         //三方管理-短信
         990101 => "短信类型不能为空",
-
-
     );
 
     public function __construct($code = 990000, $message="")

@@ -19,7 +19,12 @@ class HttpRequest extends \Exception
     {
         $result = array();
         $url = $host . $path;
-        $header = $this->getHeader($params, $option);
+        if (isset($option['is_financial']) && $option['is_financial'] == 1) {
+            $header = $this->getFinancialHeader($params, $option);
+        } else {
+            $header = $this->getHeader($params, $option);
+        }
+
         $header["Content-Type"] = "application/json";
         try {
             if (strtolower($method) == 'post') {
@@ -106,11 +111,42 @@ class HttpRequest extends \Exception
         $params['appid'] = $appId;
         $sign = $this->generateSign($params, $appSecret);
 
-
         $header = array();
         $header[] = "timestamp:" . $timestamp;
         $header[] = "sign:" . $sign;
         $header[] = "appid:" . $appId;
+        return $header;
+    }
+
+    /**
+     * 获取财务请求头信息
+     * @param $params
+     * @param $option
+     * @return array
+     * @throws TianmiaoCloudException
+     */
+    private function getFinancialHeader($params, $option)
+    {
+        if (empty($option['app_id'])) {
+            Throw new TianmiaoCloudException(990002);
+        }
+
+        if (empty($option['app_secret'])) {
+            Throw new TianmiaoCloudException(990003);
+        }
+
+        $appId = $option['app_id'];
+        $appSecret = $option['app_secret'];
+
+        $timestamp = time();
+        $params['timestamp'] = $timestamp;
+        $params['appkey'] = $appId;
+        $sign = $this->generateSign($params, $appSecret);
+
+        $header = array();
+        $header[] = "timestamp:" . $timestamp;
+        $header[] = "sign:" . $sign;
+        $header[] = "appkey:" . $appId;
         return $header;
     }
 
