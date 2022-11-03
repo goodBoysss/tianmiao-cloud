@@ -56,6 +56,7 @@ class SmsClient extends TripartiteClient
             'mobile' => $mobile,
             'type' => $type,
             'params' => json_encode($params),
+            'client_ip' => $this->getClientIp(),
         );
         return $this->request('/sms/send', 'post', $reqParams, array(
             'return_format' => 'bool'
