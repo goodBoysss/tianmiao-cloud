@@ -124,10 +124,8 @@ abstract class Client
     protected function request($path, $method, $params, $option)
     {
         $httpRequest = new HttpRequest();
-        $option = array(
-            'app_id' => $this->appId,
-            'app_secret' => $this->appSecret,
-        );
+        $option['app_id'] = $this->appId;
+        $option['app_secret'] = $this->appSecret;
         $result = $httpRequest->request($this->host, $path, $method, $params, $option);
         return $result;
     }
