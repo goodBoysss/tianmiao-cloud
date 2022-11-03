@@ -1,16 +1,16 @@
 <?php
 /**
- * FinancialVerifyClient.php
+ * FinancialUnionpayClient.php
  * ==============================================
  * Copy right 2015-2021  by https://www.tianmtech.com/
  * ----------------------------------------------
  * This is not a free software, without any authorization is not allowed to use and spread.
  * ==============================================
- * @desc : 财务平台-要素认证
+ * @desc : 财务平台-银联支付
  * @author: zhanglinxiao<zhanglinxiao@tianmtech.cn>
- * @date: 2022/09/29
+ * @date: 2022/11/03
  * @version: v1.0.0
- * @since: 2022/09/29 09:11
+ * @since: 2022/11/03 09:11
  */
 
 
