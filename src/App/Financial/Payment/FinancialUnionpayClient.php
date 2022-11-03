@@ -14,11 +14,11 @@
  */
 
 
-namespace Tianmiao\Cloud\App\Financial\Verify;
+namespace Tianmiao\Cloud\App\Financial\Payment;
 
 use Tianmiao\Cloud\App\Financial\FinancialClient;
 
-class FinancialVerifyClient extends FinancialClient
+class FinancialUnionpayClient extends FinancialClient
 {
     /**@var $this */
     static protected $instance;
