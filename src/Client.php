@@ -35,9 +35,8 @@ abstract class Client
     static protected $instance;
 
     /**
-     * 初始化
+     * 初始化（单例）
      * @param array $config 应用配置
-     * @param array $option 额外选项
      * @return $this
      */
     static function getInstance($config = array())
@@ -50,6 +49,18 @@ abstract class Client
         }
 
         return self::$instance;
+    }
+
+    /**
+     * 初始化（每次都重新初始化）
+     * @param array $config 应用配置
+     * @return $this
+     */
+    static function newInstance($config = array())
+    {
+        $instance = new static();
+        $instance->init($config);
+        return $instance;
     }
 
 
