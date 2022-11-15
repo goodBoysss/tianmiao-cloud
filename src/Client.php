@@ -1,12 +1,12 @@
 <?php
 /**
- * TripartiteClient.php
+ * Client.php
  * ==============================================
  * Copy right 2015-2021  by https://www.tianmtech.com/
  * ----------------------------------------------
  * This is not a free software, without any authorization is not allowed to use and spread.
  * ==============================================
- * @desc : 三方管理平台
+ * @desc : 公共服务客户端
  * @author: zhanglinxiao<zhanglinxiao@tianmtech.cn>
  * @date: 2022/09/02
  * @version: v1.0.0
@@ -29,6 +29,13 @@ abstract class Client
 
     //环境变量配置项
     public $envConfig = array();
+
+    //环境变量配置项（通用参数）
+    protected $envGeneralConfig = array(
+        'appId' => "GENERAL_APP_ID",
+        'appSecret' => "GENERAL_APP_SECRET"
+    );
+
     /**
      * @var $this
      */
@@ -101,11 +108,25 @@ abstract class Client
                 }
             }
         }
+
+        //兼容公共服务间通用配置项
+        $envGeneralConfig = $this->envGeneralConfig;
+        if (!empty($envGeneralConfig)) {
+            foreach ($envGeneralConfig as $key => $envKey) {
+                if (empty($this->$key)) {
+                    $value = getenv($envKey);
+                    if ($value !== false && !empty($key)) {
+                        $this->$key = $value;
+                    }
+                }
+            }
+        }
     }
 
     /**
      * 检查配置项参数
      * @throws TianmiaoCloudException
+     * @return null
      */
     private function checkConfig()
     {
@@ -132,7 +153,7 @@ abstract class Client
      * @return array|bool
      * @throws TianmiaoCloudException
      */
-    protected function request($path, $method, $params, $option)
+    protected function request($path, $method, $params, $option = array())
     {
         $httpRequest = new HttpRequest();
         $option['app_id'] = $this->appId;
