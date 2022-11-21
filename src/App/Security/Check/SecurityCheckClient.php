@@ -243,4 +243,52 @@ class SecurityCheckClient extends SecurityClient
             'return_format' => 'data'
         ));
     }
+
+    /**
+     * FunctionName: verifyFraudUsers
+     * Description: 验证诈骗信息接口
+     * @remark 类型 字段名 是否必传 说明
+     * @sonParam int user_id 是 用户id
+     * @sonParam int user_code 是 用户编号
+     * @sonParam string mobile 是 手机号
+     * @sonParam string truename 是 真实姓名
+     * @sonParam string identity_card 是 身份证号
+     * @sonParam string device_id 是 设备编号
+     * @sonParam string ip 是 ip
+     * @sonParam int source 是 数据来源： 2登录触发 3注册触发 4认证触发
+     *
+     * @param $params
+     * @return array|bool
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     */
+    public function verifyFraudUsers($params)
+    {
+        return $this->request('/api/fraud/user/verify', 'post', $params, array(
+            'return_format' => 'data'
+        ));
+    }
+
+    /**
+     * FunctionName: reportRiskUsers
+     * Description: 上报诈骗信息接口
+     * @remark 类型 字段名 是否必传 说明
+     * @sonParam int user_id 是 用户id
+     * @sonParam int user_code 是 用户编号
+     * @sonParam string mobile 是 手机号
+     * @sonParam string truename 是 真实姓名
+     * @sonParam string identity_card 是 身份证号
+     * @sonParam string device_id 是 设备编号
+     * @sonParam string ip 是 ip
+     * @sonParam int source 是 数据来源：1 业务上报
+     *
+     * @param $params
+     * @return array|bool
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     */
+    public function reportFraudUsers($params)
+    {
+        return $this->request('/api/fraud/user/report', 'post', $params, array(
+            'return_format' => 'data'
+        ));
+    }
 }
