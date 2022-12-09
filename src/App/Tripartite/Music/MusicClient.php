@@ -32,37 +32,33 @@ class MusicClient extends TripartiteClient
 
     /**
      * @desc: 获取歌曲列表
-     * @param string $keyword 搜索关键词
-     * @param int $limit 每页大小
-     * @param int $offset 偏移量
+     * @param array $params 请求参数
+     * @remark 类型 字段名 是否必传 说明
+     * @sonParam string keyword 否 搜索关键词
+     * @sonParam int limit 否 每页大小
+     * @sonParam int offset 否 偏移量
      * @return array|bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
      * User: zhaoyanna <zhaoyanna@tianmtech.cn>
      * DateTime: 2022/12/08 19:32
      */
-    public function getWangYiYunSongList($keyword, $limit, $offset)
+    public function getWangYiYunSongList($params)
     {
-        $reqParams = [
-            'keyword' => $keyword,
-            'limit'   => $limit,
-            'offset'  => $offset,
-        ];
-        return $this->request('/music/wangyiyun/songs', 'get', $reqParams);
+        return $this->request('/music/wangyiyun/songs', 'get', $params);
     }
 
     /**
      * @desc: 获取歌曲详情
-     * @param string $songId 歌曲id
+     * @param array $params 请求参数
+     * @remark 类型 字段名 是否必传 说明
+     * @sonParam string song_id 是 歌曲id
      * @return array|bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
      * User: zhaoyanna <zhaoyanna@tianmtech.cn>
      * DateTime: 2022/12/08 19:33
      */
-    public function getWangYiYunSongDetail($songId)
+    public function getWangYiYunSongDetail($params)
     {
-        $reqParams = [
-            'song_id' => $songId,
-        ];
-        return $this->request('/music/wangyiyun/song', 'get', $reqParams);
+        return $this->request('/music/wangyiyun/song', 'get', $params);
     }
 }
