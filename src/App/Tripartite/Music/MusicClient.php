@@ -40,7 +40,7 @@ class MusicClient extends TripartiteClient
      * User: zhaoyanna <zhaoyanna@tianmtech.cn>
      * DateTime: 2022/12/08 19:32
      */
-    private function getWangYiYunSongList($keyword, $limit, $offset)
+    public function getWangYiYunSongList($keyword, $limit, $offset)
     {
         $reqParams = [
             'keyword' => $keyword,
@@ -58,7 +58,7 @@ class MusicClient extends TripartiteClient
      * User: zhaoyanna <zhaoyanna@tianmtech.cn>
      * DateTime: 2022/12/08 19:33
      */
-    private function getWangYiYunSongDetail($songId)
+    public function getWangYiYunSongDetail($songId)
     {
         $reqParams = [
             'song_id' => $songId,
