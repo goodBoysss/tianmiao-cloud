@@ -61,4 +61,17 @@ class MusicClient extends TripartiteClient
     {
         return $this->request('/music/wangyiyun/song', 'get', $params);
     }
+
+    /**
+     * @desc: 获取服务商类型
+     * @param array $params 请求参数
+     * @return array|bool
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     * User: zhaoyanna <zhaoyanna@tianmtech.cn>
+     * DateTime: 2022/12/09 17:59
+     */
+    public function getProviderType($params = [])
+    {
+        return $this->request('/music/provider/type', 'get', $params);
+    }
 }
