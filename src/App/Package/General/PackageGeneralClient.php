@@ -20,8 +20,8 @@ use Tianmiao\Cloud\App\Package\PackageClient;
 class PackageGeneralClient extends PackageClient
 {
     /**
+     * @desc 获取渠道包数量
      * @param $appAlias
-     * @desc
      * @return array|bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
      * @author mukunhao<mukunhao@tianmtech.cn>
