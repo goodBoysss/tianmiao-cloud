@@ -31,7 +31,7 @@ class MusicClient extends TripartiteClient
     }
 
     /**
-     * @desc: 获取歌曲列表
+     * @desc: 获取网易云歌曲列表
      * @param array $params 请求参数
      * @remark 类型 字段名 是否必传 说明
      * @sonParam string keyword 否 搜索关键词
@@ -48,7 +48,7 @@ class MusicClient extends TripartiteClient
     }
 
     /**
-     * @desc: 获取歌曲详情
+     * @desc: 获取网易云歌曲详情
      * @param array $params 请求参数
      * @remark 类型 字段名 是否必传 说明
      * @sonParam string song_id 是 歌曲id
@@ -73,5 +73,18 @@ class MusicClient extends TripartiteClient
     public function getProviderType($params = [])
     {
         return $this->request('/music/provider/type', 'get', $params);
+    }
+
+    /**
+     * @desc: 上报网易云音乐播放信息
+     * @param array $params 请求参数
+     * @return array|bool
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     * User: zhaoyanna <zhaoyanna@tianmtech.cn>
+     * DateTime: 2022/12/15 14:27
+     */
+    public function reportWangYiYunPlay($params)
+    {
+        return $this->request('/music/wangyiyun/report/play', 'post', $params);
     }
 }
