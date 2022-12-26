@@ -30,7 +30,7 @@ class PackageGeneralClient extends PackageClient
      */
     public function getChannelPackageNum($appAlias)
     {
-        return $this->request('/channel/package/num', 'get', array(
+        return $this->request('/api/channel/package/num', 'get', array(
             'alias' => $appAlias
         ));
     }
