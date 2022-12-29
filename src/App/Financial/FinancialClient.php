@@ -36,7 +36,7 @@ class FinancialClient extends Client
      * @return array|bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
      */
-    protected function request($path, $method, $params, $option)
+    protected function request($path, $method, $params, $option = array())
     {
         $httpRequest = new HttpRequest();
         $option['app_id'] = $this->appId;
