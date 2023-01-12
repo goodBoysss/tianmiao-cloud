@@ -178,6 +178,13 @@ abstract class Client
             $ip = $_SERVER['REMOTE_ADDR'];
         }
 
+        if (!empty($ip)) {
+            $clientIpArr = explode(',', $ip);
+            if (!empty($clientIpArr[0])) {
+                $ip = $clientIpArr[0];
+            }
+        }
+
         return $ip;
     }
 

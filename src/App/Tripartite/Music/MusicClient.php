@@ -85,6 +85,7 @@ class MusicClient extends TripartiteClient
      */
     public function reportWangYiYunPlay($params)
     {
+        $params['client_ip'] = $this->getClientIp();
         return $this->request('/music/wangyiyun/report/play', 'post', $params);
     }
 }
