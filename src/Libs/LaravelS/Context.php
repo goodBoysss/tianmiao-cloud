@@ -6,7 +6,7 @@
  * ----------------------------------------------
  * This is not a free software, without any authorization is not allowed to use and spread.
  * ==============================================
- * @desc:
+ * @desc:全局数据填充器
  * @author: zhanglinxiao<zhanglinxiao@tianmtech.cn>
  * @date: 2023/02/02
  * @version: v1.0.0
