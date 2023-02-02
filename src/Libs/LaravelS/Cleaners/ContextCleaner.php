@@ -17,9 +17,10 @@
 namespace Tianmiao\Cloud\Libs\LaravelS\Cleaners;
 
 
+use Hhxsv5\LaravelS\Illuminate\Cleaners\BaseCleaner;
 use Illuminate\Support\Facades\Facade;
 
-class ContextCleaner
+class ContextCleaner extends BaseCleaner
 {
     public function clean()
     {
