@@ -32,13 +32,13 @@ class Context
      * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
      * DateTime: 2023/02/01 15:47
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $keyMd5 = $this->keyMd5($key);
         if (isset($this->box[$keyMd5])) {
             return $this->box[$keyMd5]['val'];
         }
-        return null;
+        return $default;
     }
 
     /**
