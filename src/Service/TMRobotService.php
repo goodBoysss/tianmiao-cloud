@@ -72,7 +72,10 @@ class TMRobotService
                 return $this->requestApi($body, $robotUrl);
             }
         } catch (\Throwable $t) {
-
+            return array(
+                'result' => false,
+                'error' => $t->getMessage(),
+            );
         }
     }
 
