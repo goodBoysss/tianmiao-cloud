@@ -27,7 +27,7 @@ class LogicCleaner extends BaseCleaner
         $bindings = $this->currentApp->getBindings();
         $abstracts = array_keys($bindings);
         foreach ($abstracts as $abstract) {
-            if (is_string($abstract) && substr($abstract, 0, 6) !== "logic_") {
+            if (is_string($abstract) && substr($abstract, 0, 6) == "logic_") {
                 $this->currentApp->forgetInstance($abstract);
                 Facade::clearResolvedInstance($abstract);
             }
