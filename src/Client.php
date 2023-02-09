@@ -48,14 +48,16 @@ abstract class Client
      */
     static function getInstance($config = array())
     {
-        if (is_null(self::$instance)) {
-            $instance = new static();
-            $instance->init($config);
-
-            self::$instance = $instance;
-        }
-
-        return self::$instance;
+//        if (is_null(self::$instance)) {
+//            $instance = new static();
+//            $instance->init($config);
+//
+//            self::$instance = $instance;
+//        }
+//
+//        return self::$instance;
+        //swoole无法使用静态属性
+        return self::newInstance($config);
     }
 
     /**
@@ -125,21 +127,21 @@ abstract class Client
 
     /**
      * 检查配置项参数
-     * @throws TianmiaoCloudException
      * @return null
+     * @throws TianmiaoCloudException
      */
     private function checkConfig()
     {
         if (empty($this->host)) {
-            Throw new TianmiaoCloudException(990001);
+            throw new TianmiaoCloudException(990001);
         }
 
         if (empty($this->appId)) {
-            Throw new TianmiaoCloudException(990002);
+            throw new TianmiaoCloudException(990002);
         }
 
         if (empty($this->appSecret)) {
-            Throw new TianmiaoCloudException(990003);
+            throw new TianmiaoCloudException(990003);
         }
 
     }
