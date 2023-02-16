@@ -28,7 +28,7 @@ class HttpRequest extends \Exception
         $header["Content-Type"] = "application/json";
         try {
             if (strtolower($method) == 'post') {
-                $reqResult = $this->sendPost($url, $params, $header);
+                $reqResult = $this->sendPost($url, $params, $header, $option);
             } else {
                 $reqResult = $this->sendGet($url, $params, $header);
             }
@@ -41,11 +41,11 @@ class HttpRequest extends \Exception
             }
 
         } catch (\Throwable $e) {
-            Throw new TianmiaoCloudException(990010, $e->getMessage());
+            throw new TianmiaoCloudException(990010, $e->getMessage());
         }
 
         if (empty($result)) {
-            Throw new TianmiaoCloudException(990010);
+            throw new TianmiaoCloudException(990010);
         } else {
             $result = $this->dealReturn($result, $option);
         }
@@ -80,7 +80,7 @@ class HttpRequest extends \Exception
             if (!empty($result['message'])) {
                 $message = $result['message'];
             }
-            Throw new TianmiaoCloudException(990010, $message);
+            throw new TianmiaoCloudException(990010, $message);
         }
 
         return $result;
@@ -96,11 +96,11 @@ class HttpRequest extends \Exception
     private function getHeader($params, $option)
     {
         if (empty($option['app_id'])) {
-            Throw new TianmiaoCloudException(990002);
+            throw new TianmiaoCloudException(990002);
         }
 
         if (empty($option['app_secret'])) {
-            Throw new TianmiaoCloudException(990003);
+            throw new TianmiaoCloudException(990003);
         }
 
         $appId = $option['app_id'];
@@ -128,11 +128,11 @@ class HttpRequest extends \Exception
     private function getFinancialHeader($params, $option)
     {
         if (empty($option['app_id'])) {
-            Throw new TianmiaoCloudException(990002);
+            throw new TianmiaoCloudException(990002);
         }
 
         if (empty($option['app_secret'])) {
-            Throw new TianmiaoCloudException(990003);
+            throw new TianmiaoCloudException(990003);
         }
 
         $appId = $option['app_id'];
@@ -175,9 +175,10 @@ class HttpRequest extends \Exception
      * @param $url
      * @param $param
      * @param array $header
+     * @param array $option
      * @return bool|string
      */
-    private function sendPost($url, $param, $header = [])
+    private function sendPost($url, $param, $header = [], array $option = [])
     {
         $ch = curl_init();//①：初始化
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -185,12 +186,19 @@ class HttpRequest extends \Exception
         if (!empty($header)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
+
+        //获取连接超时时间
+        $connectTimeOut = $this->getConnectTimeOut($option);
+
+        //获取执行超时时间
+        $timeOut = $this->getTimeOut($option);
+
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         //连接超时时间
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeOut);
         //执行超时时间
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeOut);
 
         $content = curl_exec($ch);//③：执行并获取结果
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -204,9 +212,10 @@ class HttpRequest extends \Exception
      * @param $url
      * @param $params
      * @param array $header
+     * @param array $option
      * @return bool|string
      */
-    private function sendGet($url, $params, $header = [])
+    private function sendGet($url, $params, $header = [], array $option = [])
     {
         //构造请求参数
         $param = http_build_query($params);
@@ -216,16 +225,61 @@ class HttpRequest extends \Exception
         if (!empty($header)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
+
+        //获取连接超时时间
+        $connectTimeOut = $this->getConnectTimeOut($option);
+
+        //获取执行超时时间
+        $timeOut = $this->getTimeOut($option);
+
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         //连接超时时间
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeOut);
         //执行超时时间
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeOut);
         $content = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($code != 200) return false;
         curl_close($ch);
         return $content;
+    }
+
+    /**
+     * @desc: 获取执行超时时间
+     * @param $option
+     * @return int
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/16 18:29
+     */
+    private function getTimeOut($option)
+    {
+        $timeOut = 30;
+        if (!empty($option['time_out'])) {
+            $option['time_out'] = (int)$option['time_out'];
+            if ($option['time_out'] > 0) {
+                $timeOut = $option['time_out'];
+            }
+        }
+        return $timeOut;
+    }
+
+    /**
+     * @desc: 获取连接超时时间
+     * @param $option
+     * @return int
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/16 18:29
+     */
+    private function getConnectTimeOut($option)
+    {
+        $connectTimeOut = 30;
+        if (!empty($option['connect_time_out'])) {
+            $option['connect_time_out'] = (int)$option['connect_time_out'];
+            if ($option['connect_time_out'] > 0) {
+                $connectTimeOut = $option['connect_time_out'];
+            }
+        }
+        return $connectTimeOut;
     }
 }
