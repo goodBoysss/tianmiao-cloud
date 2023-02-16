@@ -20,7 +20,7 @@ use Tianmiao\Cloud\App\Package\PackageClient;
 class PackageGeneralClient extends PackageClient
 {
     /**
-     * @desc 获取渠道包数量
+     * @desc 获取渠道系统渠道包数量
      * @param $appAlias
      * @return array|bool
      * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
@@ -28,10 +28,35 @@ class PackageGeneralClient extends PackageClient
      * @date 2022/12/14 15:06
      * @apilink
      */
-    public function getChannelPackageNum($appAlias)
+    public function getChannelPackageNum($appAlias, $option = array())
     {
+        $option = array_merge($option, [
+            'return_format' => 'data',
+            'connect_time_out' => 3,
+            'time_out' => 3
+        ]);
+
         return $this->request('/api/channel/package/num', 'get', array(
             'alias' => $appAlias
         ));
+    }
+
+    /**
+     * @desc  获取推广系统渠道包数量
+     * @param $appAlias
+     * @return array|bool
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     * @author mukunhao<mukunhao@tianmtech.cn>
+     * @date 2023/2/16 16:31
+     */
+    public function getPromotionPackageNum($appAlias, $option = [])
+    {
+        $option = array_merge($option, [
+            'return_format' => 'data',
+            'connect_time_out' => 3,
+            'time_out' => 3
+        ]);
+
+        return $this->request('/api/promotion/package/num', 'get', $appAlias, $option);
     }
 }
