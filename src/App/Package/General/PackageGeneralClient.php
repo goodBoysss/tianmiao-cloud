@@ -30,15 +30,15 @@ class PackageGeneralClient extends PackageClient
      */
     public function getChannelPackageNum($appAlias, $option = array())
     {
-        $option = array_merge($option, [
+        $option = array_merge([
             'return_format' => 'data',
             'connect_time_out' => 3,
             'time_out' => 3
-        ]);
+        ], $option);
 
         return $this->request('/api/channel/package/num', 'get', array(
             'alias' => $appAlias
-        ));
+        ), $option);
     }
 
     /**
@@ -51,12 +51,14 @@ class PackageGeneralClient extends PackageClient
      */
     public function getPromotionPackageNum($appAlias, $option = [])
     {
-        $option = array_merge($option, [
+        $option = array_merge([
             'return_format' => 'data',
             'connect_time_out' => 3,
             'time_out' => 3
-        ]);
+        ], $option);
 
-        return $this->request('/api/promotion/package/num', 'get', $appAlias, $option);
+        return $this->request('/api/promotion/package/num', 'get', array(
+            'alias' => $appAlias
+        ), $option);
     }
 }
