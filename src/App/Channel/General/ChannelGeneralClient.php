@@ -34,4 +34,20 @@ class ChannelGeneralClient extends ChannelClient
             'alias' => $appAlias
         ));
     }
+
+    /**
+     * 通过别名获取当前应用渠道包使用情况
+     * @param $appAlias
+     * @params alias 应用别名
+     * @return array|bool ['package_num' => 1] or []
+     * @throws TianmiaoCloudException
+     * @author yangwenjie <yangwenjie@tianmtech.cn>
+     * @datetime 2023/2/23 17:49
+     */
+    public function getAppPackageUsedNum($appAlias)
+    {
+        return $this->request('/api/app/package/used/num', 'get', array(
+            'alias' => $appAlias
+        ));
+    }
 }
