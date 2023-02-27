@@ -12,13 +12,15 @@ class TianmiaoCloudException extends \Exception
         990003 => "应用秘钥不能为空",
         //发起http请求失败
         990010 => "网络请求失败",
+        //发起http请求失败
+        990020 => "机器人消息发送失败",
         //三方管理-短信
         990101 => "短信类型不能为空",
     );
 
-    public function __construct($code = 990000, $message="")
+    public function __construct($code = 990000, $message = "")
     {
-        if (empty($message)){
+        if (empty($message)) {
             $codeInfo = $this->codeInfo;
             if (!empty($codeInfo[$code])) {
                 $message = $codeInfo[$code];
