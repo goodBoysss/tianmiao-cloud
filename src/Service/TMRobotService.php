@@ -26,6 +26,10 @@ class TMRobotService
      */
     private static $instance;
 
+    private $ROBOT_TYPES = array(
+        1 => "企业微信",
+    );
+
     /**
      * 实例化
      */
@@ -42,6 +46,88 @@ class TMRobotService
     }
 
     /**
+     * @desc: 获取机器人url
+     * @param $option
+     * @return string
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/27 13:09
+     */
+    private function getRobotUrl($option = array())
+    {
+        $robotUrl = "";
+        if (!empty($option['robot_url'])) {
+            $robotUrl = $option['robot_url'];
+        } else if (!empty(getenv("QYWX_ROBOT_URL"))) {
+            $robotUrl = getenv("QYWX_ROBOT_URL");
+        }
+
+        if (empty($robotUrl)) {
+            throw new TianmiaoCloudException(990020, '机器人消息发送失败，机器人链接不能为空');
+        }
+
+        return $robotUrl;
+    }
+
+    /**
+     * @desc: 获取机器人类型
+     * @param $robotUrl
+     * @return int 1-企业微信；
+     * @throws TianmiaoCloudException
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/27 13:31
+     */
+    private function getRobotType($robotUrl)
+    {
+        $robotType = 0;
+
+        $urlInfo = parse_url($robotUrl);
+        if (!empty($urlInfo['host'])) {
+            $host = $urlInfo['host'];
+            if ($host == "qyapi.weixin.qq.com") {
+                $robotType = 1;
+            }
+        }
+
+        if (empty($this->ROBOT_TYPES[$robotType])) {
+            throw new TianmiaoCloudException(990020, '机器人地址不合法或暂不支持该发送通道');
+        }
+
+        return $robotType;
+    }
+
+    /**
+     * @desc: 构建文本消息body
+     * @param $text
+     * @param $robotType
+     * @return array
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/27 13:27
+     */
+    private function buildTextMsgBody($text, $robotType)
+    {
+        $body = array();
+        if ($robotType == 1) {//企业微信
+            if (is_array($text)) {
+                $text = json_encode($text, JSON_UNESCAPED_UNICODE);
+            } elseif (is_object($text)) {
+                $text = json_encode($text, JSON_UNESCAPED_UNICODE);
+            }
+
+            //企业微信机器人文本内容，最长不超过2048个字节，必须是utf8编码
+            $text = mb_substr($text, 0, 500);
+
+            $body = array(
+                "msgtype" => "text",
+                "text" => array(
+                    "content" => $text
+                ),
+            );
+        }
+        return $body;
+    }
+
+
+    /**
      * 发送文本消息
      * @param string|array|int $text
      * @param array $option
@@ -51,34 +137,14 @@ class TMRobotService
     public function sendTextMsg($text, array $option = array())
     {
         try {
-            $robotUrl = "";
-            if (!empty($option['robot_url'])) {
-                $robotUrl = $option['robot_url'];
-            } else if (!empty(getenv("QYWX_ROBOT_URL"))) {
-                $robotUrl = getenv("QYWX_ROBOT_URL");
-            }
+            //获取机器人url
+            $robotUrl = $this->getRobotUrl($option);
+            //获取机器人类型
+            $robotType = $this->getRobotType($robotUrl);
+            //构建文本消息body
+            $body = $this->buildTextMsgBody($text, $robotType);
 
-            if (!empty($robotUrl)) {
-                if (is_array($text)) {
-                    $text = json_encode($text, JSON_UNESCAPED_UNICODE);
-                } elseif (is_object($text)) {
-                    $text = json_encode($text, JSON_UNESCAPED_UNICODE);
-                }
-
-                //企业微信机器人文本内容，最长不超过2048个字节，必须是utf8编码
-                $text = mb_substr($text, 0, 500);
-
-                $body = array(
-                    "msgtype" => "text",
-                    "text" => array(
-                        "content" => $text
-                    ),
-                );
-
-                return $this->requestApi($body, $robotUrl);
-            } else {
-                throw new TianmiaoCloudException(990020, '机器人消息发送失败，机器人链接不能为空');
-            }
+            return $this->requestApi($body, $robotUrl, $robotType);
         } catch (\Throwable $t) {
             return array(
                 'result' => false,
@@ -94,10 +160,10 @@ class TMRobotService
 //     * --content 消息内容
 //     * --button_url 按钮url
 //     * --button_text 按钮文字
-//     * @param $robot_url
+//     * @param $robotUrl
 //     * @return array
 //     */
-//    public function sendInteractiveMsg($data, $robot_url) {
+//    public function sendInteractiveMsg($data, $robotUrl) {
 //
 //        $title = "";
 //        if (!empty($data['title'])) {
@@ -194,7 +260,7 @@ class TMRobotService
 //            );
 //        }
 //
-//        return $this->requestApi($body, $robot_url);
+//        return $this->requestApi($body, $robotUrl);
 //    }
 //
 //    /**
@@ -202,10 +268,10 @@ class TMRobotService
 //     * @param $data
 //     * --title 标题
 //     * --content 标题
-//     * @param $robot_url
+//     * @param $robotUrl
 //     * @return array
 //     */
-//    public function sendPostMsg($data, $robot_url) {
+//    public function sendPostMsg($data, $robotUrl) {
 //        $title = "";
 //        if (!empty($data['title'])) {
 //            $title = $data['title'];
@@ -228,7 +294,7 @@ class TMRobotService
 //            ),
 //        );
 //
-//        return $this->requestApi($body, $robot_url);
+//        return $this->requestApi($body, $robotUrl);
 //    }
 //
 //
@@ -236,10 +302,10 @@ class TMRobotService
 //     * 发送群名片
 //     * @param $data
 //     * --share_chat_id 名片ID
-//     * @param $robot_url
+//     * @param $robotUrl
 //     * @return array
 //     */
-//    public function sendShareChatMsg($data, $robot_url) {
+//    public function sendShareChatMsg($data, $robotUrl) {
 //        $share_chat_id = "";
 //        if (!empty($data['share_chat_id'])) {
 //            $share_chat_id = $data['share_chat_id'];
@@ -252,7 +318,7 @@ class TMRobotService
 //            ),
 //        );
 //
-//        return $this->requestApi($body, $robot_url);
+//        return $this->requestApi($body, $robotUrl);
 //    }
 //
 //
@@ -260,10 +326,10 @@ class TMRobotService
 //     * 发送图片
 //     * @param $data
 //     * --image_key 图片key
-//     * @param $robot_url
+//     * @param $robotUrl
 //     * @return array
 //     */
-//    public function sendImageMsg($data, $robot_url) {
+//    public function sendImageMsg($data, $robotUrl) {
 //        $image_key = "";
 //        if (!empty($data['image_key'])) {
 //            $image_key = $data['image_key'];
@@ -276,17 +342,18 @@ class TMRobotService
 //            ),
 //        );
 //
-//        return $this->requestApi($body, $robot_url);
+//        return $this->requestApi($body, $robotUrl);
 //    }
 
 
     /**
      * 请求飞书API
      * @param $body
-     * @param $robot_url
+     * @param $robotUrl
+     * @param $robotType
      * @return array
      */
-    protected function requestApi($body, $robot_url)
+    protected function requestApi($body, $robotUrl, $robotType)
     {
         $result = true;
         $error = "";
@@ -295,7 +362,7 @@ class TMRobotService
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => $robot_url,
+                CURLOPT_URL => $robotUrl,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
