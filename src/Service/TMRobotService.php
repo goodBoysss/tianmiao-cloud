@@ -28,6 +28,8 @@ class TMRobotService
 
     private $ROBOT_TYPES = array(
         1 => "企业微信",
+        2 => "钉钉",
+        3 => "飞书",
     );
 
     /**
@@ -83,8 +85,12 @@ class TMRobotService
         $urlInfo = parse_url($robotUrl);
         if (!empty($urlInfo['host'])) {
             $host = $urlInfo['host'];
-            if ($host == "qyapi.weixin.qq.com") {
+            if ($host === "qyapi.weixin.qq.com") {
                 $robotType = 1;
+            } elseif ($host === "oapi.dingtalk.com") {
+                $robotType = 2;
+            } elseif ($host === "open.feishu.cn") {
+                $robotType = 3;
             }
         }
 
@@ -106,12 +112,14 @@ class TMRobotService
     private function buildTextMsgBody($text, $robotType)
     {
         $body = array();
+
+        if (is_array($text)) {
+            $text = json_encode($text, JSON_UNESCAPED_UNICODE);
+        } elseif (is_object($text)) {
+            $text = json_encode($text, JSON_UNESCAPED_UNICODE);
+        }
+
         if ($robotType == 1) {//企业微信
-            if (is_array($text)) {
-                $text = json_encode($text, JSON_UNESCAPED_UNICODE);
-            } elseif (is_object($text)) {
-                $text = json_encode($text, JSON_UNESCAPED_UNICODE);
-            }
 
             //企业微信机器人文本内容，最长不超过2048个字节，必须是utf8编码
             $text = mb_substr($text, 0, 500);
@@ -120,6 +128,28 @@ class TMRobotService
                 "msgtype" => "text",
                 "text" => array(
                     "content" => $text
+                ),
+            );
+        } elseif ($robotType === 2) {//钉钉
+
+            //钉钉机器人文本内容，最长不超过20000个字节
+            $text = mb_substr($text, 0, 5000);
+
+            $body = array(
+                "msgtype" => "text",
+                "text" => array(
+                    "content" => $text
+                ),
+            );
+        } elseif ($robotType === 3) {//飞书
+
+            //飞书机器人文本内容，最长不超过30kb
+            $text = mb_substr($text, 0, 7000);
+
+            $body = array(
+                "msg_type" => "text",
+                "content" => array(
+                    "text" => $text
                 ),
             );
         }
@@ -385,15 +415,37 @@ class TMRobotService
                 $req_result = json_decode($req_result, true);
             }
 
-            if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
-                $result = true;
-            } else {
-                $result = false;
-                $error = "发送请求失败";
-                if (!empty($req_result['errmsg'])) {
-                    $error = $req_result['errmsg'];
-                } elseif (!empty($req_result['msg'])) {
-                    $error = $req_result['msg'];
+            if ($robotType === 1){ //企业微信
+                if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
+                    $result = true;
+                } else {
+                    $result = false;
+                    $error = "发送请求失败";
+                    if (!empty($req_result['errmsg'])) {
+                        $error = $req_result['errmsg'];
+                    } elseif (!empty($req_result['msg'])) {
+                        $error = $req_result['msg'];
+                    }
+                }
+            } elseif ($robotType === 2){
+                if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
+                    $result = true;
+                } else {
+                    $result = false;
+                    $error = "发送请求失败";
+                    if (!empty($req_result['errmsg'])) {
+                        $error = $req_result['errmsg'];
+                    }
+                }
+            } elseif ($robotType === 3){
+                if (isset($req_result['code']) && $req_result['code'] === 0) {
+                    $result = true;
+                } else {
+                    $result = false;
+                    $error = "发送请求失败";
+                    if (!empty($req_result['msg'])) {
+                        $error = $req_result['msg'];
+                    }
                 }
             }
 
@@ -407,6 +459,4 @@ class TMRobotService
             'error' => $error,
         );
     }
-
-
 }
