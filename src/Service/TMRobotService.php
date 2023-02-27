@@ -48,7 +48,7 @@ class TMRobotService
      *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
      * @return array
      */
-    public function sendTextMsg($text, $option = array())
+    public function sendTextMsg($text, array $option = array())
     {
         try {
             $robotUrl = "";
@@ -318,13 +318,13 @@ class TMRobotService
                 $req_result = json_decode($req_result, true);
             }
 
-            if (isset($req_result['StatusCode']) && $req_result['StatusCode'] == 0) {
+            if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
                 $result = true;
             } else {
                 $result = false;
                 $error = "发送请求失败";
-                if (!empty($req_result['StatusMessage'])) {
-                    $error = $req_result['StatusMessage'];
+                if (!empty($req_result['errmsg'])) {
+                    $error = $req_result['errmsg'];
                 } elseif (!empty($req_result['msg'])) {
                     $error = $req_result['msg'];
                 }
