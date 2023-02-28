@@ -109,7 +109,7 @@ class TMRobotService
      * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
      * DateTime: 2023/02/27 13:27
      */
-    private function buildTextMsgBody($text, $robotType)
+    private function buildTextMsgBody($text, $robotType, $option)
     {
         $body = array();
 
@@ -127,7 +127,7 @@ class TMRobotService
             $body = array(
                 "msgtype" => "text",
                 "text" => array(
-                    "content" => $text
+                    "content" => $text,
                 ),
             );
         } elseif ($robotType === 2) {//钉钉
@@ -139,7 +139,7 @@ class TMRobotService
                 "msgtype" => "text",
                 "text" => array(
                     "content" => $text
-                ),
+                )
             );
         } elseif ($robotType === 3) {//飞书
 
@@ -153,15 +153,162 @@ class TMRobotService
                 ),
             );
         }
-        return $body;
+
+        return $this->atUserInfos(1, $body, $robotType, $option);
     }
 
+    /**
+     * @desc: 构建markdown消息body
+     * @param $content
+     * @param $robotType
+     * @return array
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/27 13:27
+     */
+    private function buildMarkdownMsgBody($content, $robotType, $option)
+    {
+        $body = array();
+
+        if (is_array($content)) {
+            $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+        } elseif (is_object($content)) {
+            $content = json_encode($content, JSON_UNESCAPED_UNICODE);
+        }
+
+        if ($robotType === 1) {//企业微信 不支持手机号的形式，只能通过@userid 不支持@所有人
+
+            $body = array(
+                "msgtype" => "markdown",
+                "markdown" => array(
+                    "content" => $content
+                ),
+            );
+        } elseif ($robotType === 2) {//钉钉
+
+            $body = array(
+                "msgtype" => "markdown",
+                "markdown" => array(
+                    "title" => "钉钉预警",
+                    "text" => $content
+                ),
+            );
+        } elseif ($robotType === 3) {//飞书
+            $body = array(
+                'msg_type' => 'interactive',
+                'card' => [
+                    'elements' => [
+                        [
+                            'tag' => 'markdown',
+                            "content" => $content,
+                        ]
+                    ]
+                ]
+            );
+        }
+        return $this->atUserInfos(2, $body, $robotType, $option);
+    }
+
+    /**
+     * @desc: 构建图文消息body
+     * @param array $data
+     * @param $robotType
+     * @param $option
+     * @return array
+     * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
+     * DateTime: 2023/02/27 13:27
+     */
+    private function buildImageTextMsgBody(array $data, $robotType, $option)
+    {
+        $body = array();
+        $title = "";
+        if (!empty($data['title'])) {
+            $title = $data['title'];
+        }
+
+        $description = "";
+        if (!empty($data['description'])) {
+            $description = $data['description'];
+        }
+
+        $url = "";
+        if (!empty($data['url'])) {
+            $url = $data['url'];
+        }
+
+        $picUrl = "";
+        if (!empty($data['pic_url'])) {
+            $picUrl = $data['pic_url'];
+        }
+
+        if ($robotType === 1) {//企业微信
+
+            $body = [
+                "msgtype" => "news",
+                "news" => [
+                    'articles' => [
+                        "title" => $title,
+                        "description" => $description,
+                        "url" => $url,
+                        "picurl" => $picUrl
+                    ]
+                ]
+            ];
+        } elseif ($robotType === 2) {//钉钉
+
+            $body = [
+                "msgtype" => "feedCard",
+                "feedCard" => [
+                    "links" => [
+                        [
+                            "title" => $title,
+                            "messageURL" => $url,
+                            "picURL" => $picUrl
+                        ]
+                    ]
+                ]
+            ];
+        } elseif ($robotType === 3) {//飞书
+            $body = array(
+                'msg_type' => 'post',
+                'content' => [
+                    'post' => [
+                        'zh_cn' => [
+                            "title" => $title,
+                            "content" => array(
+                                [
+                                    [
+                                        "tag" => "text",
+                                        "text" => $description
+                                    ],
+                                    [
+                                        "tag" => "a",
+                                        "href" => $url,
+                                        "text" => "超链接"
+                                    ],
+                                ],
+                                [
+                                    [
+                                        "tag" => "img",
+                                        "image_key" => $picUrl
+                                    ]
+                                ]
+                            )
+                        ]
+                    ]
+                ]
+            );
+        }
+
+        return $this->atUserInfos(3, $body, $robotType, $option);
+    }
 
     /**
      * 发送文本消息
      * @param string|array|int $text
      * @param array $option
      *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+     *          array at_mobile_list at用户手机号列表
+     *          bool at_all_mobile 是否@all表示提醒所有人
      * @return array
      */
     public function sendTextMsg($text, array $option = array())
@@ -172,7 +319,7 @@ class TMRobotService
             //获取机器人类型
             $robotType = $this->getRobotType($robotUrl);
             //构建文本消息body
-            $body = $this->buildTextMsgBody($text, $robotType);
+            $body = $this->buildTextMsgBody($text, $robotType, $option);
 
             return $this->requestApi($body, $robotUrl, $robotType);
         } catch (\Throwable $t) {
@@ -181,6 +328,139 @@ class TMRobotService
                 'error' => $t->getMessage(),
             );
         }
+    }
+
+    /**
+     * 发送markdown消息
+     * @param string $content #### 杭州天气 \n > 9度，西北风1级，空气良89，相对温度73%\n > ![screenshot](https://img.alicdn.com/tfs/TB1NwmBEL9TBuNjy1zbXXXpepXa-2400-1218.png)\n > ###### 10点20分发布 [天气](https://www.dingtalk.com) \n
+     * @param array $option
+     *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+     *          array at_mobile_list at用户手机号列表
+     *          bool at_all_mobile 是否@all表示提醒所有人
+     * @return array
+     */
+    public function sendMarkdownMsg(string $content, array $option = array())
+    {
+        try {
+            //获取机器人url
+            $robotUrl = $this->getRobotUrl($option);
+            //获取机器人类型
+            $robotType = $this->getRobotType($robotUrl);
+            //构建文本消息body
+            $body = $this->buildMarkdownMsgBody($content, $robotType, $option);
+
+            return $this->requestApi($body, $robotUrl, $robotType);
+        } catch (\Throwable $t) {
+            return array(
+                'result' => false,
+                'error' => $t->getMessage(),
+            );
+        }
+    }
+
+    /**
+     * 发送图文消息
+     * @param array $data
+     *          string title 标题
+     *          string description 描述
+     *          string url 跳转链接
+     *          string pic_url 图片url 飞书要传图片上传后的key
+     * @param array $option
+     *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+     *          array at_mobile_list at用户手机号列表
+     *          bool at_all_mobile 是否@all表示提醒所有人
+     * @return array
+     */
+    public function sendImageTextMsg(array $data, array $option = array())
+    {
+        try {
+            //获取机器人url
+            $robotUrl = $this->getRobotUrl($option);
+            //获取机器人类型
+            $robotType = $this->getRobotType($robotUrl);
+            //构建文本消息body
+            $body = $this->buildImageTextMsgBody($data, $robotType, $option);
+
+            return $this->requestApi($body, $robotUrl, $robotType);
+        } catch (\Throwable $t) {
+            return array(
+                'result' => false,
+                'error' => $t->getMessage(),
+            );
+        }
+    }
+
+    /**
+     * at用户
+     * @param $msgType //消息类型 1、文本 2、图文 3、Markdown
+     * @param $body
+     * @param $robotType
+     * @param $option
+     * @return array
+     */
+    private function atUserInfos($msgType, $body, $robotType, $option): array
+    {
+
+        if ($robotType === 1) {//企业微信
+
+            if ($msgType === 1) {
+
+                //手机号列表，提醒手机号对应的群成员(@某个成员)
+                $atMobileList = [];
+                if (!empty($option['at_mobile_list'])) {
+                    $atMobileList = $option['at_mobile_list'];
+                }
+
+                //是否at所有人、
+                $allMobile = [];
+                if (!empty($option['at_all_mobile'])) {
+                    $allMobile = ['@all'];
+                }
+
+                $body['text']["mentioned_mobile_list"] = array_merge($atMobileList, $allMobile); //["13800001111","@all"]
+            }
+
+        } elseif ($robotType === 2) {//钉钉
+
+            //手机号列表，提醒手机号对应的群成员(@某个成员)
+            $atMobileList = [];
+            if (!empty($option['at_mobile_list'])) {
+                $atMobileList = $option['at_mobile_list'];
+            }
+
+            //是否at所有人、
+            $isAtAll = false;
+            if (!empty($option['at_all_mobile'])) {
+                $isAtAll = true;
+            }
+
+            if ($msgType === 1) {
+                $body["at"] = [
+                    "atMobiles" => $atMobileList, //被@人的手机号。
+                    "isAtAll" => $isAtAll //是否@所有人。
+                ];
+            } elseif ($msgType === 2) {
+                $body["at"] = [
+                    "atMobiles" => $atMobileList, //被@人的手机号。
+                    "isAtAll" => $isAtAll //是否@所有人。
+                ];
+            }
+
+        } elseif ($robotType === 3) {//飞书
+
+            if ($msgType === 1) {
+
+                //是否at所有人、
+                $isAtAll = '';
+                if (!empty($option['at_all_mobile'])) {
+                    $isAtAll = "<at user_id='all'>所有人</at>";
+                }
+
+                $body['content']["text"] .= $isAtAll; //["13800001111","@all"]
+            }
+        }
+
+        return $body;
     }
 //
 //    /**
@@ -415,7 +695,7 @@ class TMRobotService
                 $req_result = json_decode($req_result, true);
             }
 
-            if ($robotType === 1){ //企业微信
+            if ($robotType === 1) { //企业微信
                 if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
                     $result = true;
                 } else {
@@ -427,7 +707,7 @@ class TMRobotService
                         $error = $req_result['msg'];
                     }
                 }
-            } elseif ($robotType === 2){
+            } elseif ($robotType === 2) {
                 if (isset($req_result['errcode']) && $req_result['errcode'] == 0) {
                     $result = true;
                 } else {
@@ -437,7 +717,7 @@ class TMRobotService
                         $error = $req_result['errmsg'];
                     }
                 }
-            } elseif ($robotType === 3){
+            } elseif ($robotType === 3) {
                 if (isset($req_result['code']) && $req_result['code'] === 0) {
                     $result = true;
                 } else {
