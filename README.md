@@ -139,3 +139,87 @@ $result=SmsClient::getInstance()->checkSendWhite(18888888888);
 
 ```
 
+### 机器人服务-预警 机器人服务(目前仅支持：企业微信、钉钉、飞书)
+ 
+#### 文本
+```php
+//webhooks地址
+$option['robot_url'] = "https://";
+//手机号列表，提醒手机号对应的群成员(@某个成员) 飞书暂不支持手机号@
+$option['at_mobile_list'] = ['138****8**'];
+//是否@all表示提醒所有人
+$option['at_all_mobile'] = true;
+
+$text = "测试1";
+
+$service = new Tianmiao\Cloud\Service\TMRobotService;
+
+/**
+ * 发送文本消息
+ * @param string|array|int $text
+ * @param array $option
+ *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+ *          array at_mobile_list at用户手机号列表
+ *          bool at_all_mobile 是否@all表示提醒所有人
+ * @return array
+ */
+$service->sendTextMsg($text, $option);
+```
+
+#### 图文
+```php
+$option['robot_url'] = "https://";
+//不支持
+$option['at_mobile_list'] = ['138****8**'];
+//不支持
+$option['at_all_mobile'] = true;
+
+$content = [
+    "title" => "中秋节礼品领取",
+    "description" => "今年中秋节公司有豪礼相送",
+    "url" => "www.qq.com",
+    "pic_url" => "http://res.mail.qq.com/node/ww/wwopenmng/images/independent/doc/test_pic_msg1.png"
+//    "pic_url" => "img_7ea74629-9191-4176-998c-2e603c9c5e8g"  // 飞书 要把图片上传获取到image_key
+];
+
+$service = new Tianmiao\Cloud\Service\TMRobotService;
+
+/**
+ * 发送图文消息
+ * @param array $data
+ *          string title 标题
+ *          string description 描述
+ *          string url 跳转链接
+ *          string pic_url 图片url 飞书要传图片上传后的key
+ * @param array $option
+ *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+ *          array at_mobile_list at用户手机号列表
+ *          bool at_all_mobile 是否@all表示提醒所有人
+ * @return array
+ */
+$service->sendImageTextMsg($content, $option);
+```
+
+#### Markdown
+```php
+$option['robot_url'] = "https://";
+//手机号列表，提醒手机号对应的群成员(@某个成员) 企业微信、飞书不支持
+$option['at_mobile_list'] = ['138****8**'];
+//是否@all表示提醒所有人 企业微信、飞书不支持
+$option['at_all_mobile'] = true;
+
+$text = "#### 杭州天气 \n > 9度，西北风1级，空气良89，相对温度73%\n > ![screenshot](img_7ea74629-9191-4176-998c-2e603c9c5e8g)\n > ###### 10点20分发布 [天气](https://www.dingtalk.com) \n";
+
+$service = new Tianmiao\Cloud\Service\TMRobotService;
+
+/**
+ * 发送markdown消息
+ * @param string $content #### 杭州天气 \n > 9度，西北风1级，空气良89，相对温度73%\n > ![screenshot](https://img.alicdn.com/tfs/TB1NwmBEL9TBuNjy1zbXXXpepXa-2400-1218.png)\n > ###### 10点20分发布 [天气](https://www.dingtalk.com) \n
+ * @param array $option
+ *          string robot_url 机器人地址，默认取env  QYWX_ROBOT_URL
+ *          array at_mobile_list at用户手机号列表
+ *          bool at_all_mobile 是否@all表示提醒所有人
+ * @return array
+ */
+$service->sendMarkdownMsg($text, $option);
+```

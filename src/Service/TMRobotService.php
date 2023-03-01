@@ -6,7 +6,7 @@
  * ----------------------------------------------
  * This is not a free software, without any authorization is not allowed to use and spread.
  * ==============================================
- * @desc : 机器人服务(目前仅支持：企业微信，后期会加入：钉钉，华为等)
+ * @desc : 机器人服务(目前仅支持：企业微信、钉钉、飞书) 支持文字、图文、markdown
  * @author: zhanglinxiao<zhanglinxiao@tianmtech.cn>
  * @date: 2022/12/07
  * @version: v1.0.0
@@ -175,7 +175,7 @@ class TMRobotService
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         }
 
-        if ($robotType === 1) {//企业微信 不支持手机号的形式，只能通过@userid 不支持@所有人
+        if ($robotType === 1) {
 
             $body = array(
                 "msgtype" => "markdown",
@@ -205,7 +205,7 @@ class TMRobotService
                 ]
             );
         }
-        return $this->atUserInfos(2, $body, $robotType, $option);
+        return $this->atUserInfos(3, $body, $robotType, $option);
     }
 
     /**
@@ -299,7 +299,7 @@ class TMRobotService
             );
         }
 
-        return $this->atUserInfos(3, $body, $robotType, $option);
+        return $this->atUserInfos(2, $body, $robotType, $option);
     }
 
     /**
@@ -418,6 +418,11 @@ class TMRobotService
                 }
 
                 $body['text']["mentioned_mobile_list"] = array_merge($atMobileList, $allMobile); //["13800001111","@all"]
+            } elseif ($msgType === 2) {
+
+            } elseif ($msgType === 3) {
+                //企业微信 Markdown不支持手机号的形式，只能通过@userid 不支持@所有人
+
             }
 
         } elseif ($robotType === 2) {//钉钉
@@ -444,6 +449,8 @@ class TMRobotService
                     "atMobiles" => $atMobileList, //被@人的手机号。
                     "isAtAll" => $isAtAll //是否@所有人。
                 ];
+            } elseif ($msgType === 3) {
+
             }
 
         } elseif ($robotType === 3) {//飞书
@@ -456,7 +463,11 @@ class TMRobotService
                     $isAtAll = "<at user_id='all'>所有人</at>";
                 }
 
-                $body['content']["text"] .= $isAtAll; //["13800001111","@all"]
+                $body['content']["text"] .= $isAtAll;
+            } elseif ($msgType === 2) {
+
+            } elseif ($msgType === 3) {
+
             }
         }
 
