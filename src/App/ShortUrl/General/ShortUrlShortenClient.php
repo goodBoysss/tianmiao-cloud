@@ -71,6 +71,6 @@ class ShortUrlShortenClient extends ShortUrlClient
             'connect_timeout' => 3,
             'timeout' => 3
         ]);
-        return $this->request('/api/url/shorten', 'post', $params, $option);
+        return $this->request('/api/url/batch/shorten', 'post', $params, $option);
     }
 }
