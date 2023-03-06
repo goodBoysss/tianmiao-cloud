@@ -46,7 +46,7 @@ class ShortUrlShortenClient extends ShortUrlClient
     }
 
     /**
-     * @desc: 批量生成生成多个短链接
+     * @desc: 批量生成多个短链接
      * @param $params
      * @remark 类型 字段名 是否必传 说明
      * @sonParam array urls 是 url,例如：["http://www.baidu.com","http://www.baidu2.com"]
