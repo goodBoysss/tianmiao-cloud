@@ -39,8 +39,8 @@ class ShortUrlShortenClient extends ShortUrlClient
     {
         $option = array_merge($option, [
             'return_format' => 'data',
-            'connect_time_out' => 3,
-            'time_out' => 3
+            'connect_timeout' => 3,
+            'timeout' => 3
         ]);
         return $this->request('/api/url/shorten', 'post', $params, $option);
     }
@@ -68,8 +68,8 @@ class ShortUrlShortenClient extends ShortUrlClient
 
         $option = array_merge($option, [
             'return_format' => 'data',
-            'connect_time_out' => 3,
-            'time_out' => 3
+            'connect_timeout' => 3,
+            'timeout' => 3
         ]);
         return $this->request('/api/url/shorten', 'post', $params, $option);
     }

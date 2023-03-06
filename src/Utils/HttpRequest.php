@@ -188,17 +188,17 @@ class HttpRequest extends \Exception
         }
 
         //获取连接超时时间
-        $connectTimeOut = $this->getConnectTimeOut($option);
+        $connectTimeout = $this->getConnectTimeout($option);
 
         //获取执行超时时间
-        $timeOut = $this->getTimeOut($option);
+        $timeout = $this->getTimeout($option);
 
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
         //连接超时时间
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeOut);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
         //执行超时时间
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeOut);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         $content = curl_exec($ch);//③：执行并获取结果
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -227,17 +227,17 @@ class HttpRequest extends \Exception
         }
 
         //获取连接超时时间
-        $connectTimeOut = $this->getConnectTimeOut($option);
+        $connectTimeout = $this->getConnectTimeout($option);
 
         //获取执行超时时间
-        $timeOut = $this->getTimeOut($option);
+        $timeout = $this->getTimeout($option);
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         //连接超时时间
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeOut);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
         //执行超时时间
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeOut);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         $content = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($code != 200) return false;
@@ -252,16 +252,16 @@ class HttpRequest extends \Exception
      * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
      * DateTime: 2023/02/16 18:29
      */
-    private function getTimeOut($option)
+    private function getTimeout($option)
     {
-        $timeOut = 30;
-        if (!empty($option['time_out'])) {
-            $option['time_out'] = (int)$option['time_out'];
-            if ($option['time_out'] > 0) {
-                $timeOut = $option['time_out'];
+        $timeout = 30;
+        if (!empty($option['timeout'])) {
+            $option['timeout'] = (int)$option['timeout'];
+            if ($option['timeout'] > 0) {
+                $timeout = $option['timeout'];
             }
         }
-        return $timeOut;
+        return $timeout;
     }
 
     /**
@@ -271,15 +271,15 @@ class HttpRequest extends \Exception
      * User: zhanglinxiao<zhanglinxiao@tianmtech.cn>
      * DateTime: 2023/02/16 18:29
      */
-    private function getConnectTimeOut($option)
+    private function getConnectTimeout($option)
     {
-        $connectTimeOut = 30;
-        if (!empty($option['connect_time_out'])) {
-            $option['connect_time_out'] = (int)$option['connect_time_out'];
-            if ($option['connect_time_out'] > 0) {
-                $connectTimeOut = $option['connect_time_out'];
+        $connectTimeout = 30;
+        if (!empty($option['connect_timeout'])) {
+            $option['connect_timeout'] = (int)$option['connect_timeout'];
+            if ($option['connect_timeout'] > 0) {
+                $connectTimeout = $option['connect_timeout'];
             }
         }
-        return $connectTimeOut;
+        return $connectTimeout;
     }
 }

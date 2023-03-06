@@ -32,8 +32,8 @@ class PackageGeneralClient extends PackageClient
     {
         $option = array_merge([
             'return_format' => 'data',
-            'connect_time_out' => 3,
-            'time_out' => 3
+            'connect_timeout' => 3,
+            'timeout' => 3
         ], $option);
 
         return $this->request('/api/channel/package/num', 'get', array(
@@ -53,8 +53,8 @@ class PackageGeneralClient extends PackageClient
     {
         $option = array_merge([
             'return_format' => 'data',
-            'connect_time_out' => 3,
-            'time_out' => 3
+            'connect_timeout' => 3,
+            'timeout' => 3
         ], $option);
 
         return $this->request('/api/promotion/package/num', 'get', array(
