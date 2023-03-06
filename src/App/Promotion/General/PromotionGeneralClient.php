@@ -51,4 +51,22 @@ class PromotionGeneralClient extends PromotionClient
             'aliases' => $appAliases
         ));
     }
+
+    /**
+     * 批量获取渠道的包状态信息
+     * @param $appAlias
+     * @param $channelCodes
+     * @return array
+     * @throws TianmiaoCloudException
+     * @author chengjiangang <chengjiangang@tianmtech.cn>
+     * @datetime 2023/3/3 17:49
+     */
+    public function getAppPackagesStatus($appAlias, $channelCodes)
+    {
+        return $this->request('/api/app/packages/status', 'get', array(
+            'app_alias' => $appAlias,
+            'channel_codes' => $channelCodes,
+        ));
+    }
+
 }
