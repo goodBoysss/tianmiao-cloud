@@ -69,4 +69,28 @@ class PromotionGeneralClient extends PromotionClient
         ));
     }
 
+    /**
+     * 通过别名和渠道包code回传打包状态
+     * @params $appAlias 应用别名 例如 'qipao,youmi,qianhuan'
+     * @params $channelCode 渠道code 例如 '100058'
+     * @params $status 打包状态 例如 0=失败，1=成功
+     * @params $packageUpdateTime 打包状态 例如 0=失败，1=成功
+     * @params $msg 错误信息 例如 '服务器故障'
+     * @return array|bool 返回示例(正常) {"code":200,"data":[],"message":"状态变更成功"}
+     * @return array|bool 返回示例(异常-应用不存在) {"code":10001,"message":"与原状态一致，状态变更失败"}
+     * @throws TianmiaoCloudException
+     * @author chengjiangang <chengjiangang@tianmtech.cn>
+     * @datetime 2023/3/3 17:49
+     */
+    public function callbackAppPackageStatus($appAlias, $channelCode, $status, $packageUpdateTime, $msg)
+    {
+        return $this->request('/api/app/package/callback/status', 'post', array(
+            'app_alias' => $appAlias,
+            'channel_code' => $channelCode,
+            'status' => $status,
+            'package_update_time' => $packageUpdateTime,
+            'msg' => $msg,
+        ));
+    }
+
 }
