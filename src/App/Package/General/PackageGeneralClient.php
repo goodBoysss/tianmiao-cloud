@@ -61,4 +61,29 @@ class PackageGeneralClient extends PackageClient
             'alias' => $appAlias
         ), $option);
     }
+
+    /**
+     * @desc: 推广分析系统打包
+     * @param string $appAlias 应用别名
+     * @param string $channelCode 渠道CODE
+     * @param array $option
+     * @return array
+     * @throws \Tianmiao\Cloud\Utils\TianmiaoCloudException
+     * User: mukunhao<mukunhao@tianmtech.cn>
+     * DateTime: 2023/03/07 11:43
+     */
+    public function promotionPack($appAlias, $channelCode, $option = [])
+    {
+        $option = array_merge($option, [
+            'return_format'    => 'data',
+            'connect_time_out' => 3,
+            'time_out'         => 3,
+        ]);
+        $reqParams = [
+            'app_alias'    => $appAlias,
+            'channel_code' => $channelCode,
+        ];
+
+        return $this->request('/api/promotion/pack', 'post', $reqParams, $option);
+    }
 }
